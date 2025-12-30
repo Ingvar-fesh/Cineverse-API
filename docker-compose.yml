@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: cineverse_db # Friendly name for the container
+    restart: always
+    ports:
+      - "5432:5432" # Maps localhost:5432 to container:5432
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}       # The username you will use in NestJS
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}   # The name of the database to create
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: 
