@@ -13,6 +13,5 @@ export class Actor {
     dateOfBirth: string;
 
     @ManyToMany(() => Movie, (movie) => movie.actors)
-    @JoinTable()
     filmography: Movie[];
 }

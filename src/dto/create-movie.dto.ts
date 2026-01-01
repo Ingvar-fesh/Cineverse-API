@@ -19,4 +19,8 @@ export class CreateMovieDto {
     @IsArray()
     @IsString({ each: true })
     genres: string[];
+
+    @IsArray()
+    @IsNumber({}, { each: true })
+    actorIds: number[];
 }

@@ -22,12 +22,11 @@ export class Movie {
     @Column()
     trailer_link: string;
 
-    @ManyToMany(() => Genre, (genre) => genre.movies, {
-        cascade: false
-    })
-    @JoinTable()
-    genres: Genre[]
+    @ManyToMany(() => Genre, (genre) => genre.movies)
+    @JoinTable() 
+    genres: Genre[];
 
     @ManyToMany(() => Actor, (actor) => actor.filmography)
+    @JoinTable()
     actors: Actor[]
 }

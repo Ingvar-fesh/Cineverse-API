@@ -1,11 +1,11 @@
-import { IsAlpha, IsArray, IsOptional, IsString } from "class-validator";
+import { IsAlpha, IsArray, IsDateString, IsOptional, IsString } from "class-validator";
 
 export class CreateActorDto {
     @IsString()
     name: string;
 
-    @IsString()
-    birthDate: string;
+    @IsDateString()
+    dateOfBirth: string;
 
     @IsOptional()
     @IsArray()
