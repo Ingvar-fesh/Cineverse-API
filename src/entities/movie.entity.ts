@@ -1,5 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Genre } from "./genre.entity";
+import { Actor } from "./actor.entity";
 
 @Entity()
 export class Movie {
@@ -26,4 +27,7 @@ export class Movie {
     })
     @JoinTable()
     genres: Genre[]
+
+    @ManyToMany(() => Actor, (actor) => actor.filmography)
+    actors: Actor[]
 }

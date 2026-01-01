@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { GenresModule } from './genres/genres.module';
 import Joi from 'joi';
 import { Genre } from './entities/genre.entity';
+import { ActorsModule } from './actors/actors.module';
+import { Actor } from './entities/actor.entity';
 
 @Module({
   imports: [
@@ -26,10 +28,11 @@ import { Genre } from './entities/genre.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Movie, Genre],
+      entities: [Movie, Genre, Actor],
       synchronize: true
     }),
-    GenresModule
+    GenresModule,
+    ActorsModule
   ],
   controllers: [AppController],
   providers: [AppService],
