@@ -3,6 +3,8 @@ import { ActorsService } from './actors.service';
 import { CreateActorDto } from 'src/dto/create-actor.dto';
 import { UpdateActorDto } from 'src/dto/update-actor.sto';
 import { SkipAuth } from 'src/auth/skip-auth.decorator';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/users/role.enum';
 
 @Controller('actors')
 export class ActorsController {
@@ -16,6 +18,7 @@ export class ActorsController {
         return this.actorsService.findAll();
     }
 
+    @SkipAuth()
     @Get(':id')
     findById(@Param('id', ParseIntPipe) id: number) {
         return this.findById(id);
@@ -31,6 +34,7 @@ export class ActorsController {
         return this.actorsService.update(+id, updateActorDto);
     }
 
+    @Roles(Role.Admin)
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.actorsService.remove(+id);

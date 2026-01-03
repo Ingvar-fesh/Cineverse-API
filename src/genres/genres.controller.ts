@@ -5,6 +5,8 @@ import { CreateGenreDto } from 'src/dto/create-genre.dto';
 import { UpdateActorDto } from 'src/dto/update-actor.sto';
 import { UpdateGenreDto } from 'src/dto/update-genre.dto';
 import { SkipAuth } from 'src/auth/skip-auth.decorator';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/users/role.enum';
 
 @Controller('genres')
 export class GenresController {
@@ -18,6 +20,7 @@ export class GenresController {
         return this.genresService.findAll()
     }
 
+    @SkipAuth()
     @Get(':id')
     async findById(@Param('id', ParseIntPipe) id: number) {
         return this.genresService.findById(id);
@@ -33,6 +36,7 @@ export class GenresController {
         return this.genresService.update(+id, updateGenreDto);
     }
 
+    @Roles(Role.Admin)
     @Delete(':id')
     remove(@Param('id') id: string) {
         return this.genresService.remove(+id);

@@ -11,6 +11,8 @@ import { Role } from 'src/users/role.enum';
 export class MoviesController {
     constructor(private moviesService: MoviesService) {}
 
+    @SkipAuth()
+    @Get(':id')
     async findOne(@Param('id', ParseIntPipe) id: number) {
         return this.moviesService.findById(id);
     }
