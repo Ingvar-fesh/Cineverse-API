@@ -4,6 +4,8 @@ import { Movie } from 'src/entities/movie.entity';
 import { CreateMovieDto } from 'src/dto/create-movie.dto';
 import { UpdateMovieDto } from 'src/dto/update-movie.dto';
 import { SkipAuth } from 'src/auth/skip-auth.decorator';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/users/role.enum';
 
 @Controller('movies')
 export class MoviesController {
@@ -29,6 +31,7 @@ export class MoviesController {
         return this.moviesService.update(id, updateMovieDto);
     }
 
+    @Roles(Role.Admin)
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.moviesService.remove(id);
