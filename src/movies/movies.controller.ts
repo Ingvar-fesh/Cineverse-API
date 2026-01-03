@@ -3,6 +3,7 @@ import { MoviesService } from './movies.service';
 import { Movie } from 'src/entities/movie.entity';
 import { CreateMovieDto } from 'src/dto/create-movie.dto';
 import { UpdateMovieDto } from 'src/dto/update-movie.dto';
+import { SkipAuth } from 'src/auth/skip-auth.decorator';
 
 @Controller('movies')
 export class MoviesController {
@@ -12,6 +13,7 @@ export class MoviesController {
         return this.moviesService.findById(id);
     }
 
+    @SkipAuth()
     @Get()
     async findAll(): Promise<Movie[]> {
         return this.moviesService.findAll();

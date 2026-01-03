@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from 
 import { ActorsService } from './actors.service';
 import { CreateActorDto } from 'src/dto/create-actor.dto';
 import { UpdateActorDto } from 'src/dto/update-actor.sto';
+import { SkipAuth } from 'src/auth/skip-auth.decorator';
 
 @Controller('actors')
 export class ActorsController {
@@ -9,6 +10,7 @@ export class ActorsController {
         private readonly actorsService: ActorsService
     ) {}
 
+    @SkipAuth()
     @Get()
     findAll() {
         return this.actorsService.findAll();

@@ -4,6 +4,7 @@ import { Genre } from 'src/entities/genre.entity';
 import { CreateGenreDto } from 'src/dto/create-genre.dto';
 import { UpdateActorDto } from 'src/dto/update-actor.sto';
 import { UpdateGenreDto } from 'src/dto/update-genre.dto';
+import { SkipAuth } from 'src/auth/skip-auth.decorator';
 
 @Controller('genres')
 export class GenresController {
@@ -11,6 +12,7 @@ export class GenresController {
         private readonly genresService: GenresService
     ) {}
 
+    @SkipAuth()
     @Get()
     async findAll(): Promise<Genre[]> {
         return this.genresService.findAll()
