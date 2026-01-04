@@ -4,6 +4,7 @@ import { UpdateMovieDto } from 'src/dto/update-movie.dto';
 import { Actor } from 'src/entities/actor.entity';
 import { Genre } from 'src/entities/genre.entity';
 import { Movie } from 'src/entities/movie.entity';
+import { Review } from 'src/entities/review.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -32,19 +33,33 @@ export class MoviesService {
         return movieGenres;
     }
 
-    findAll(): Promise<Movie[]> {
-        return this.moviesRepository.find({
-            relations: ['genres', 'actors'],
+    async findAll(): Promise<any[]> {
+        const movies = await this.moviesRepository.find({
+            relations: ['genres', 'actors', 'reviews'],
+        })
+
+        return movies.map(movie => {
+            const totalRating = movie.reviews.reduce((sum, review) => sum + review.rating, 0);
+            const averageRating = movie.reviews.length > 0 
+                ? +(totalRating / movie.reviews.length).toFixed(1) 
+                : 0;
+            return { ...movie, averageRating };
         })
     } 
 
-    async findById(id: number): Promise<Movie> {
+    async findById(id: number): Promise<any> {
         const movie = await this.moviesRepository.findOne({
             where: { id },
-            relations: ['genres', 'actors'],
+            relations: ['genres', 'actors', 'reviews'],
         });
         if (!movie) throw new NotFoundException(`Movie with ID ${id} not found`);
-        return movie;
+
+        const totalRating = movie.reviews.reduce((sum, review) => sum + review.rating, 0);
+        const avarageRating = movie.reviews.length > 0 
+            ? (totalRating / movie.reviews.length).toFixed(1)
+            : 0;
+        
+        return { ...movie, avarageRating };
     }
 
     findByTitle(title: string): Promise<Movie | null> {

@@ -15,6 +15,8 @@ import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { User } from './entities/user.entity';
+import { ReviewsModule } from './reviews/reviews.module';
+import { Review } from './entities/review.entity';
 
 @Module({
   imports: [
@@ -34,13 +36,14 @@ import { User } from './entities/user.entity';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Movie, Genre, Actor, User],
+      entities: [Movie, Genre, Actor, User, Review],
       synchronize: true
     }),
     GenresModule,
     ActorsModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    ReviewsModule
   ],
   controllers: [AppController],
   providers: [AppService, {

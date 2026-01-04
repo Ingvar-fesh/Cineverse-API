@@ -1,6 +1,7 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Genre } from "./genre.entity";
 import { Actor } from "./actor.entity";
+import { Review } from "./review.entity";
 
 @Entity()
 export class Movie {
@@ -29,4 +30,7 @@ export class Movie {
     @ManyToMany(() => Actor, (actor) => actor.filmography)
     @JoinTable()
     actors: Actor[]
+
+    @OneToMany(() => Review, (review) => review.movie)
+    reviews: Review[];
 }
