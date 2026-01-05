@@ -4,6 +4,7 @@ import { CreateActorDto } from 'src/dto/create-actor.dto';
 import { UpdateActorDto } from 'src/dto/update-actor.sto';
 import { Actor } from 'src/entities/actor.entity';
 import { Movie } from 'src/entities/movie.entity';
+import { RedisCacheService } from 'src/redis-cache/redis-cache.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -12,11 +13,18 @@ export class ActorsService {
         @InjectRepository(Actor)
         private actorsRepository: Repository<Actor>,
         @InjectRepository(Movie)
-        private moviesRepository: Repository<Movie>
+        private moviesRepository: Repository<Movie>,
+        private redisCache: RedisCacheService
     ) {}
 
-    findAll() {
-        return this.actorsRepository.find();
+    async findAll() {
+        const cacheKey = 'actors:all';
+        const cached = await this.redisCache.get(cacheKey);
+        if (cached) return cached;
+
+        const actors = await this.actorsRepository.find();
+        await this.redisCache.set(cacheKey, actors);
+        return actors;
     }
 
     findOneById(actorId: number) {
@@ -52,7 +60,8 @@ export class ActorsService {
             filmography: filmography, 
         });
 
-        return this.actorsRepository.save(actor);
+        await this.actorsRepository.save(actor);
+        await this.redisCache.del('actors:all');
     }
 
     async update(id: number, updateActorDto: UpdateActorDto) {
@@ -87,7 +96,8 @@ export class ActorsService {
 
         Object.assign(actor, updateActorDto);
 
-        return this.actorsRepository.save(actor);
+        await this.actorsRepository.save(actor);
+        await this.redisCache.del('actors:all');
     }
 
     async remove(id: number) {
@@ -95,6 +105,7 @@ export class ActorsService {
         if (result.affected === 0) {
             throw new NotFoundException(`Actor #${id} not found`);
         }
-    }
 
+        await this.redisCache.del('actors:all');
+    }
 }

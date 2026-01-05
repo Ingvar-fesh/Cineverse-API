@@ -17,6 +17,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { User } from './entities/user.entity';
 import { ReviewsModule } from './reviews/reviews.module';
 import { Review } from './entities/review.entity';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+import { RedisCacheModule } from './redis-cache/redis-cache.module';
 
 @Module({
   imports: [
@@ -39,11 +42,28 @@ import { Review } from './entities/review.entity';
       entities: [Movie, Genre, Actor, User, Review],
       synchronize: true
     }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => ({
+        store: await redisStore({
+          socket: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT!) || 6379,
+            reconnectStrategy: (retries) => {
+                console.warn(`Redis connection lost. Retrying... Attempt #${retries}`);
+                return Math.min(retries * 50, 2000);
+            },
+          },
+          ttl: 60 * 1000,
+        }),
+      }),
+    }),
     GenresModule,
     ActorsModule,
     AuthModule,
     UsersModule,
-    ReviewsModule
+    ReviewsModule,
+    RedisCacheModule
   ],
   controllers: [AppController],
   providers: [AppService, {

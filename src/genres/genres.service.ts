@@ -2,17 +2,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateGenreDto } from 'src/dto/update-genre.dto';
 import { Genre } from 'src/entities/genre.entity';
+import { RedisCacheService } from 'src/redis-cache/redis-cache.service';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class GenresService {
     constructor(
         @InjectRepository(Genre)
-        private genresRepository: Repository<Genre>
+        private genresRepository: Repository<Genre>,
+        private redisCache: RedisCacheService
     ) {}
 
     async findAll(): Promise<Genre[]> {
-        return this.genresRepository.find()
+        const cacheKey = 'genres:all';
+
+        const cached = await this.redisCache.get<Genre[]>(cacheKey);
+        if (cached) return cached;
+
+        const genres = await this.genresRepository.find();
+        await this.redisCache.set(cacheKey, genres);
+
+        return genres;
     }
 
     async findByName(name: string): Promise<Genre | null> {
@@ -28,7 +38,9 @@ export class GenresService {
             ...createGenreDto
         })
 
-        this.genresRepository.save(genre)
+        this.genresRepository.save(genre);
+
+        await this.redisCache.del('genres:all');
     }
 
     async update(id: number, updateGenreDto: UpdateGenreDto) {
@@ -36,7 +48,10 @@ export class GenresService {
         if (!genre) throw new NotFoundException(`Genre #${id} not found`);
 
         Object.assign(genre, updateGenreDto);
-        return this.genresRepository.save(genre);
+
+        await this.genresRepository.save(genre);
+
+        await this.redisCache.del('genres:all'); 
     }
 
     async remove(id: number) {
@@ -44,5 +59,7 @@ export class GenresService {
         if (result.affected === 0) {
             throw new NotFoundException(`Genre #${id} not found`);
         }
+
+        await this.redisCache.del('genres:all');
     }
 }
