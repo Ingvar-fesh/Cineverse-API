@@ -14,7 +14,7 @@ export class Movie {
     @Column()
     description: string;
 
-    @Column()
+    @Column({ type: 'date' })
     release_date: string;
 
     @Column()
@@ -23,12 +23,32 @@ export class Movie {
     @Column()
     trailer_link: string;
 
-    @ManyToMany(() => Genre, (genre) => genre.movies)
-    @JoinTable() 
+    @ManyToMany(() => Genre)
+    @JoinTable({
+        name: 'movie_genres',
+        joinColumn: {
+            name: 'movie_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'genre_id',
+            referencedColumnName: 'id'
+        }
+    })
     genres: Genre[];
 
     @ManyToMany(() => Actor, (actor) => actor.filmography)
-    @JoinTable()
+    @JoinTable({
+        name: 'movie_actors',
+        joinColumn: { 
+            name: 'movieId',
+            referencedColumnName: 'id' 
+        },
+        inverseJoinColumn: { 
+            name: 'actorId',
+            referencedColumnName: 'id' 
+        }
+    })
     actors: Actor[]
 
     @OneToMany(() => Review, (review) => review.movie)

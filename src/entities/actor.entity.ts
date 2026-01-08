@@ -9,7 +9,7 @@ export class Actor {
     @Column()
     name: string;
 
-    @Column({ type: 'date' })
+    @Column({ type: 'date', nullable: true })
     dateOfBirth: string;
 
     @ManyToMany(() => Movie, (movie) => movie.actors)

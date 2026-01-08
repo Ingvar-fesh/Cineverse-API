@@ -13,5 +13,5 @@ export class Genre {
     description: string;
 
     @ManyToMany(() => Movie, (movie) => movie.genres)
-    movies: Movie[]
+    movies: Movie[];
 }

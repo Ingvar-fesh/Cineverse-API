@@ -17,15 +17,15 @@ export class Review {
     @CreateDateColumn()
     createdAt: Date;
     
-    @ManyToOne(() => User, (user) => user.reviews)
-    @JoinColumn()
+    @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'userId' })
     user: User;
 
     @Column()
     userId: number;
 
-    @ManyToOne(() => Movie, (movie) => movie.reviews)
-    @JoinColumn()
+    @ManyToOne(() => Movie, (movie) => movie.reviews, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'movieId' })
     movie: Movie;
 
     @Column()

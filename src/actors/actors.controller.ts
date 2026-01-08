@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ActorsService } from './actors.service';
 import { CreateActorDto } from 'src/dto/create-actor.dto';
-import { UpdateActorDto } from 'src/dto/update-actor.sto';
-import { SkipAuth } from 'src/auth/skip-auth.decorator';
-import { Roles } from 'src/auth/roles.decorator';
+import { UpdateActorDto } from 'src/dto/update-actor.dto';
+import { SkipAuth } from 'src/auth/decorators/skip-auth.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
 
 @Controller('actors')
@@ -21,17 +21,17 @@ export class ActorsController {
     @SkipAuth()
     @Get(':id')
     findById(@Param('id', ParseIntPipe) id: number) {
-        return this.findById(id);
+        return this.actorsService.findOneById(id);
     }
 
     @Post()
-    create(@Body() createActorDto: CreateActorDto) {
-        this.actorsService.create(createActorDto);
+    async create(@Body() createActorDto: CreateActorDto) {
+        return await this.actorsService.create(createActorDto);
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateActorDto: UpdateActorDto) {
-        return this.actorsService.update(+id, updateActorDto);
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateActorDto: UpdateActorDto) {
+        return this.actorsService.update(id, updateActorDto);
     }
 
     @Roles(Role.Admin)

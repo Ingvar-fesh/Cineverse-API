@@ -38,9 +38,10 @@ export class GenresService {
             ...createGenreDto
         })
 
-        this.genresRepository.save(genre);
-
+        const savedGenre = await this.genresRepository.save(genre);
         await this.redisCache.del('genres:all');
+        
+        return savedGenre;
     }
 
     async update(id: number, updateGenreDto: UpdateGenreDto) {

@@ -3,8 +3,8 @@ import { MoviesService } from './movies.service';
 import { Movie } from 'src/entities/movie.entity';
 import { CreateMovieDto } from 'src/dto/create-movie.dto';
 import { UpdateMovieDto } from 'src/dto/update-movie.dto';
-import { SkipAuth } from 'src/auth/skip-auth.decorator';
-import { Roles } from 'src/auth/roles.decorator';
+import { SkipAuth } from 'src/auth/decorators/skip-auth.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
 
 @Controller('movies')

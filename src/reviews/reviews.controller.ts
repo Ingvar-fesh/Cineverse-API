@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Post, Request } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from 'src/dto/create-review.dto';
-import { SkipAuth } from 'src/auth/skip-auth.decorator';
+import { SkipAuth } from 'src/auth/decorators/skip-auth.decorator';
 
 @Controller('reviews')
 export class ReviewsController {

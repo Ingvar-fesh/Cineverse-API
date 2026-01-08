@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateActorDto } from 'src/dto/create-actor.dto';
-import { UpdateActorDto } from 'src/dto/update-actor.sto';
+import { UpdateActorDto } from 'src/dto/update-actor.dto';
 import { Actor } from 'src/entities/actor.entity';
 import { Movie } from 'src/entities/movie.entity';
 import { RedisCacheService } from 'src/redis-cache/redis-cache.service';
@@ -27,8 +27,13 @@ export class ActorsService {
         return actors;
     }
 
-    findOneById(actorId: number) {
-        return this.actorsRepository.findOneBy({ id: actorId });
+    async findOneById(actorId: number) {
+        const actor = await this.actorsRepository.findOne({ 
+            where: { id: actorId },
+            relations: ['filmography']
+        });
+        if (!actor) throw new NotFoundException(`Actor #${actorId} not found`);
+        return actor;
     }
 
     async create(createActorDto: CreateActorDto) {
@@ -37,31 +42,29 @@ export class ActorsService {
         const movieTitles = createActorDto.filmography || [];
 
         for (const movieTitle of movieTitles) {
-            
-
-            let movie = await this.moviesRepository.findOne({where: { title: movieTitle }});
+            let movie = await this.moviesRepository.findOne({ where: { title: movieTitle } });
 
             if (!movie) {
                 movie = this.moviesRepository.create({
                     title: movieTitle,
-                    description: 'Description pending...', 
+                    description: 'Description pending...',
                     release_date: new Date().toISOString(),
                     poster: 'no-poster',
                     trailer_link: 'none'
                 });
                 await this.moviesRepository.save(movie);
             }
-
             filmography.push(movie);
         }
 
         const actor = this.actorsRepository.create({
             ...createActorDto,
-            filmography: filmography, 
+            filmography: filmography,
         });
 
-        await this.actorsRepository.save(actor);
+        const savedActor = await this.actorsRepository.save(actor);
         await this.redisCache.del('actors:all');
+        return savedActor;
     }
 
     async update(id: number, updateActorDto: UpdateActorDto) {
@@ -94,10 +97,12 @@ export class ActorsService {
             actor.filmography = movies;
         }
 
-        Object.assign(actor, updateActorDto);
+        const { filmography, ...actorData } = updateActorDto;
+        Object.assign(actor, actorData);
 
-        await this.actorsRepository.save(actor);
+        const savedActor = await this.actorsRepository.save(actor);
         await this.redisCache.del('actors:all');
+        return savedActor;
     }
 
     async remove(id: number) {

@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from 
 import { GenresService } from './genres.service';
 import { Genre } from 'src/entities/genre.entity';
 import { CreateGenreDto } from 'src/dto/create-genre.dto';
-import { UpdateActorDto } from 'src/dto/update-actor.sto';
+import { UpdateActorDto } from 'src/dto/update-actor.dto';
 import { UpdateGenreDto } from 'src/dto/update-genre.dto';
-import { SkipAuth } from 'src/auth/skip-auth.decorator';
-import { Roles } from 'src/auth/roles.decorator';
+import { SkipAuth } from 'src/auth/decorators/skip-auth.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
 
 @Controller('genres')
@@ -28,7 +28,7 @@ export class GenresController {
 
     @Post()
     async create(@Body() createGenreDto: CreateGenreDto) {
-        this.genresService.create(createGenreDto);
+        return this.genresService.create(createGenreDto);
     }
 
     @Patch(':id')
